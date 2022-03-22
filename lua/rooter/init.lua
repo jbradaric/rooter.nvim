@@ -77,6 +77,9 @@ function M.find_root(path)
     local current = vim.api.nvim_get_current_buf()
     path = vim.api.nvim_buf_get_name(tonumber(current))
   end
+  if utils.startswith(path, 'term:') then
+    return nil
+  end
   return find_root(path, config)
 end
 

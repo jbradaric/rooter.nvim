@@ -20,4 +20,8 @@ function M.dirname(path)
   return result
 end
 
+function M.startswith(s, p)
+  return string.sub(s, 1, #p) == p
+end
+
 return M
