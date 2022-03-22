@@ -6,16 +6,20 @@ Also provides `Rooter` command and `FindRootDirectory()` function to remain comp
 
 ## Usage
 
-#### Use default root directory patterns
+#### Use default settings
 
 ```lua
   require('rooter').setup()
 ```
 
-#### Use custom patterns
+#### Use custom settings
 
 ```lua
   require('rooter').setup({
-    patterns = {'.git', '.hg', 'Makefile'},
+    patterns = {'.git', '_darcs', '.hg', '.bzr', '.svn', 'Makefile', 'CMakeLists.txt', 'package.json', 'Cargo.toml'},
+    cd_command = 'cd',
+    change_dir_for_non_project_files = '',
+    chdir_on_buf_enter = true,
+    vim_rooter_compat = true,
   })
 ```
