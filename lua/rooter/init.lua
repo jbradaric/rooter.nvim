@@ -85,8 +85,9 @@ local function find_root(path, config)
   end
 
   local parent = utils.dirname(path)
+  local last_parent = nil
   while true do
-    if not parent or parent == '' or parent == '/' then
+    if not parent or parent == '' or parent == '/' or parent == last_parent then
       break
     end
     for _, pat in ipairs(config.patterns) do
@@ -94,6 +95,7 @@ local function find_root(path, config)
         return parent
       end
     end
+    last_parent = parent
     parent = utils.dirname(parent)
   end
 
