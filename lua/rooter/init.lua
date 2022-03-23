@@ -4,6 +4,7 @@ local utils = require('rooter/utils')
 local M = {}
 local default_config = {
   patterns = {'.git', '_darcs', '.hg', '.bzr', '.svn', 'Makefile', 'CMakeLists.txt', 'package.json', 'Cargo.toml'},
+  targets = {"/", "*"},
   cd_command = 'cd',
   change_dir_for_non_project_files = '',
   chdir_on_buf_enter = true,
@@ -18,6 +19,23 @@ local function merge_config(default, user_conf)
   config = vim.tbl_deep_extend('error', {}, default)
   config = vim.tbl_extend('force', config, user_conf)
   return config
+end
+
+local function initialize_target_globs(config)
+  local targets = config.targets
+  if not targets then
+    return
+  end
+  local new_targets = {}
+  for _, target in ipairs(targets) do
+    if target == '/' then
+      new_targets[#new_targets + 1] = vim.regex(vim.fn.glob2regpat('*/'))
+    else
+      new_targets[#new_targets + 1] = vim.regex(vim.fn.glob2regpat(target))
+    end
+  end
+
+  config.targets = new_targets
 end
 
 local function initialize(config)
@@ -39,12 +57,33 @@ local function initialize(config)
   end
 end
 
+function is_target(path, config)
+  if not path or path == '' then
+    return false
+  end
+
+  for _, target_re in ipairs(config.targets) do
+    if target_re:match_str(path) then
+      return true
+    end
+  end
+  return false
+end
+
 function M.setup(opts)
   config = merge_config(default_config, opts)
+  initialize_target_globs(config)
   initialize(config)
 end
 
 local function find_root(path, config)
+  if utils.startswith(path, 'term:') then
+    return nil
+  end
+  if not is_target(path, config) then
+    return nil
+  end
+
   local parent = utils.dirname(path)
   while true do
     if not parent or parent == '' or parent == '/' then
@@ -76,9 +115,6 @@ function M.find_root(path)
   if path == nil then
     local current = vim.api.nvim_get_current_buf()
     path = vim.api.nvim_buf_get_name(tonumber(current))
-  end
-  if utils.startswith(path, 'term:') then
-    return nil
   end
   return find_root(path, config)
 end

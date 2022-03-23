@@ -17,6 +17,7 @@ Also provides `Rooter` command and `FindRootDirectory()` function to remain comp
 ```lua
   require('rooter').setup({
     patterns = {'.git', '_darcs', '.hg', '.bzr', '.svn', 'Makefile', 'CMakeLists.txt', 'package.json', 'Cargo.toml'},
+    targets = {'/', '*'},
     cd_command = 'cd',
     change_dir_for_non_project_files = '',
     chdir_on_buf_enter = true,
