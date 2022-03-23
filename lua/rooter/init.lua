@@ -107,7 +107,12 @@ local function find_root(path, config)
   if behavior == '' then
     return nil
   elseif behavior == 'current' then
-    return utils.dirname(path)
+    parent = utils.dirname(path)
+    if not utils.path_exists(parent) then
+        return nil
+    else
+        return parent
+    end
   elseif behavior == 'home' then
     return os.getenv('HOME')
   end
